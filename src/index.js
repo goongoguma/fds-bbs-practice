@@ -86,6 +86,7 @@ async function drawPostList() {
     const idEl = frag.querySelector('.id');
     const titleEl = frag.querySelector('.title');
     const authorEl = frag.querySelector('.author');
+    
 
     idEl.textContent = postItem.id;
     titleEl.textContent = postItem.title;
@@ -99,6 +100,7 @@ async function drawPostList() {
   }
 
   // 5. 이벤트 리스너 등록하기
+  
 
   // 6. 템플릿을 문서에 삽입
   rootEl.textContent = ''
@@ -109,12 +111,31 @@ async function drawPostList() {
 // drawPostDetail에 매개변수가 있는이유는 보여줘야 하는 게시물이 항상 다르기 때문이다.
 async function drawPostDetail(postId) {
   // 1. 템플릿 복사
-  
+  const frag = document.importNode(templates.postDetail, true)
+
   // 2. 요소 선택
+  const titleEl = frag.querySelector('.title');
+  const authorEl = frag.querySelector('.author');
+  const bodyEl = frag.querySelector('.body');
+  const backEl = frag.querySelector('.back');
+
   // 3. 필요한 데이터 불러오기
+  // 분해대입
+  // data에 title과 body를 빼냄
+  const {data: {title, body}} = await api.get('/posts/' + postId);
+
   // 4. 내용 채우기
+  titleEl.textContent = title;
+  bodyEl.textContent = body;
+
   // 5. 이벤트 리스너 등록하기
+  backEl.addEventListener('click', e => {
+    drawPostList();
+  })
+
   // 6. 템플릿을 문서에 삽입
+  rootEl.textContent = '';
+  rootEl.appendChild(frag);
 }
  
 async function drawNewPostForm() {
