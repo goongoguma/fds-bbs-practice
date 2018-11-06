@@ -122,11 +122,16 @@ async function drawPostDetail(postId) {
   // 3. 필요한 데이터 불러오기
   // 분해대입
   // data에 title과 body를 빼냄
-  const {data: {title, body}} = await api.get('/posts/' + postId);
+  const {data: {title, body, user}} = await api.get('/posts/' + postId, {
+    params: {
+      _expand: 'user'
+    }
+  });
 
   // 4. 내용 채우기
   titleEl.textContent = title;
   bodyEl.textContent = body;
+  authorEl.textContent = user.username;
 
   // 5. 이벤트 리스너 등록하기
   backEl.addEventListener('click', e => {
