@@ -123,6 +123,7 @@ async function drawPostDetail(postId) {
   // 3. 필요한 데이터 불러오기
   // 분해대입
   // data에 title과 body를 빼냄
+  // comments에는 서버로부터 받은 배열이 존재하며 배열 안에는 객체가 들어있다.
   const {data: {title, body, user, comments}} = await api.get('/posts/' + postId, {
     params: {
       // 쿼리스트링 넣는방법
@@ -131,12 +132,21 @@ async function drawPostDetail(postId) {
     }
   });
 
+  const params = new URLSearchParams() 
+  comments.forEach(c => {
+    params.append('id', c.userId)
+  })
+  // userList에는 댓글작성자 배열이 들어있다.
+  const {data: userList} = await api.get('/users', {
+    params
+  })
+
   // 4. 내용 채우기
   titleEl.textContent = title;
   bodyEl.textContent = body;
   authorEl.textContent = user.username;
+  
   // 댓글 표시
-  // comments에는 서버로부터 받은 배열이 존재한다.
   for(const commentItem of comments) {
     // 1. 템플릿 복사
     const frag = document.importNode(templates.commentItem, true);
@@ -148,6 +158,9 @@ async function drawPostDetail(postId) {
     // 3. 필요한 데이터 불러오기 - 필요없음
     // 4. 내용 채우기
     bodyEl.textContent = commentItem.body
+
+    const user = userList.find(item => item.id === commentItem.userId)
+    authorEl.textContent = user.username;
 
     // 5. 이벤트 리스너 등록하기
     // 6. 템플릿을 문서에 삽입
